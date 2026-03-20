@@ -21,10 +21,18 @@ export const Home = () => {
   const { activities } = useAppContext();
   const navigate = useNavigate();
   
-  const [cityFilter, setCityFilter] = useState('全部城市');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [cityFilter, setCityFilter] = useState(() => sessionStorage.getItem('homeCityFilter') || '全部城市');
+  const [statusFilter, setStatusFilter] = useState(() => sessionStorage.getItem('homeStatusFilter') || 'all');
   const [keywordFilter, setKeywordFilter] = useState('');
   const [isCityOpen, setIsCityOpen] = useState(false);
+  
+  useEffect(() => {
+    sessionStorage.setItem('homeCityFilter', cityFilter);
+  }, [cityFilter]);
+
+  useEffect(() => {
+    sessionStorage.setItem('homeStatusFilter', statusFilter);
+  }, [statusFilter]);
   
   const [tabLineStyle, setTabLineStyle] = useState({ width: 0, transform: 'translateX(0px)' });
   const tabsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -160,16 +168,16 @@ export const Home = () => {
           </div>
         </div>
 
-        <motion.div variants={containerVariants} initial="hidden" animate="show">
+        <motion.div key={`${cityFilter}-${statusFilter}`} variants={containerVariants} initial="hidden" animate="show">
           {filtered.map((d) => (
             <motion.div 
               key={d.id}
               variants={itemVariants}
               className="mx-5 mb-5 bg-gradient-to-br from-white/70 to-[#dcf5ff]/50 backdrop-blur-[20px] border-[1.5px] border-white rounded-[32px] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.05)] cursor-pointer"
-              onClick={() => navigate(`/detail/${d.id}`)}
+              onClick={() => navigate(`/detail/${d.id}`, { state: { filterKey: `${cityFilter}-${statusFilter}` } })}
             >
               <div className="relative h-[160px] mb-3 bg-[#eee] rounded-[20px]">
-                <motion.img layoutId={`hero-img-${d.id}`} src={d.img} className="w-full h-full object-cover rounded-[20px]" alt={d.title} />
+                <motion.img layoutId={`hero-img-${d.id}-${cityFilter}-${statusFilter}`} src={d.img} className="w-full h-full object-cover rounded-[20px]" alt={d.title} />
                 <div className={cn("absolute top-3 right-3 px-3 py-1.5 rounded-xl text-[11px] font-bold text-white backdrop-blur-sm border border-white/20", getTagColor(d.status))}>
                   {d.statusText}
                 </div>

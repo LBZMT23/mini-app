@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useAppContext } from '../context/AppContext';
 import { PageWrapper } from '../components/PageWrapper';
@@ -9,9 +9,11 @@ import { cn } from '../utils/cn';
 export const Detail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { activities, isLoggedIn, myRegistrations, setIsLoginOpen, showToast } = useAppContext();
   
   const item = activities.find(a => a.id === Number(id));
+  const filterKey = location.state?.filterKey || '全部城市-all';
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -112,7 +114,7 @@ export const Detail = () => {
 
       <motion.div variants={detailContainerVariants} initial="hidden" animate="show" className="flex-1 overflow-y-auto pb-[120px] scrollbar-hide">
         <div className="w-full h-[320px] relative z-[1]">
-          <motion.img layoutId={`hero-img-${item.id}`} src={item.img} className="w-full h-full object-cover rounded-none" alt={item.title} />
+          <motion.img layoutId={`hero-img-${item.id}-${filterKey}`} src={item.img} className="w-full h-full object-cover rounded-none" alt={item.title} />
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50 z-[2]"></div>
         </div>
 

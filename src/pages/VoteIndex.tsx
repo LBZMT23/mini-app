@@ -16,8 +16,12 @@ export const VoteIndex = () => {
   const { activities, showToast } = useAppContext();
   const navigate = useNavigate();
   
-  const [statusFilter, setStatusFilter] = useState('voting');
+  const [statusFilter, setStatusFilter] = useState(() => sessionStorage.getItem('voteStatusFilter') || 'voting');
   const [keywordFilter, setKeywordFilter] = useState('');
+  
+  useEffect(() => {
+    sessionStorage.setItem('voteStatusFilter', statusFilter);
+  }, [statusFilter]);
   
   const [tabLineStyle, setTabLineStyle] = useState({ width: 0, transform: 'translateX(0px)' });
   const tabsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -112,7 +116,7 @@ export const VoteIndex = () => {
           </div>
         </div>
 
-        <motion.div variants={containerVariants} initial="hidden" animate="show">
+        <motion.div key={`${statusFilter}`} variants={containerVariants} initial="hidden" animate="show">
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-[60px] opacity-100">
               <Info className="w-[60px] h-[60px] text-[#ddd] mb-4" strokeWidth={1.5} />
@@ -127,7 +131,7 @@ export const VoteIndex = () => {
                 onClick={() => showToast('即将进入投票列表页 (模块8)')}
               >
                 <div className="relative h-[140px] mb-3 bg-[#eee] rounded-[20px]">
-                  <motion.img layoutId={`hero-img-${d.id}`} src={d.img} className="w-full h-full object-cover rounded-[20px]" alt={d.title} />
+                  <img src={d.img} className="w-full h-full object-cover rounded-[20px]" alt={d.title} />
                   <div className={cn("absolute top-3 right-3 px-3 py-1.5 rounded-xl text-[11px] font-bold text-white backdrop-blur-sm border border-white/20", getTagColor(d.status))}>
                     {d.statusText}
                   </div>
