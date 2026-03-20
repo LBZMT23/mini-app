@@ -128,7 +128,7 @@ export const VoteIndex = () => {
                 key={d.id}
                 variants={itemVariants}
                 className="mx-5 mb-5 bg-gradient-to-br from-white/70 to-[#dcf5ff]/50 backdrop-blur-[20px] border-[1.5px] border-white rounded-[32px] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.05)] cursor-pointer"
-                onClick={() => showToast('即将进入投票列表页 (模块8)')}
+                onClick={() => navigate(`/vote-list/${d.id}`)}
               >
                 <div className="relative h-[140px] mb-3 bg-[#eee] rounded-[20px]">
                   <img src={d.img} className="w-full h-full object-cover rounded-[20px]" alt={d.title} />

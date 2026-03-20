@@ -13,6 +13,9 @@ import { Signup } from './pages/Signup';
 import { MyRegistration } from './pages/MyRegistration';
 import { PopSubmit } from './pages/PopSubmit';
 import { VoteIndex } from './pages/VoteIndex';
+import { VoteList } from './pages/VoteList';
+import { TeamDetail } from './pages/TeamDetail';
+import { Leaderboard } from './pages/Leaderboard';
 import { BottomNav } from './components/BottomNav';
 import { LoginPopup } from './components/LoginPopup';
 import { Toast } from './components/Toast';
@@ -29,6 +32,9 @@ const AnimatedRoutes = () => {
         <Route path="/my-registration/:id" element={<MyRegistration />} />
         <Route path="/pop-submit/:id" element={<PopSubmit />} />
         <Route path="/vote" element={<VoteIndex />} />
+        <Route path="/vote-list/:id" element={<VoteList />} />
+        <Route path="/team-detail/:id" element={<TeamDetail />} />
+        <Route path="/leaderboard/:id" element={<Leaderboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>

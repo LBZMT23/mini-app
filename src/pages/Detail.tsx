@@ -46,7 +46,7 @@ export const Detail = () => {
   };
 
   const handleSC = (m: string) => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn && m === '我的报名') {
       showToast('尚未登录，请先登录');
       setIsLoginOpen(true);
       return;
@@ -56,6 +56,12 @@ export const Detail = () => {
         navigate(`/my-registration/${item.id}`);
       } else {
         showToast('您还未报名该活动');
+      }
+    } else if (m === '人气投票') {
+      if (item.voteTeamCount > 0 && (item.status === 'voting' || item.status === 'ended')) {
+        navigate(`/vote-list/${item.id}`);
+      } else {
+        showToast('当前活动暂未开启投票');
       }
     } else {
       showToast('功能开发中: ' + m);
