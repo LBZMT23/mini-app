@@ -3,14 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useAppContext } from '../context/AppContext';
 import { PageWrapper } from '../components/PageWrapper';
-import { ChevronLeft, Trophy, Medal } from 'lucide-react';
+import { ChevronLeft, Trophy, Medal, RefreshCw, List, Share2, Info } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { MOCK_TEAMS, Team } from './VoteList';
 
 export const Leaderboard = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { activities } = useAppContext();
+  const { activities, showToast } = useAppContext();
   
   const item = activities.find(a => a.id === Number(id));
   const [teams] = useState<Team[]>(() => {
@@ -35,7 +35,47 @@ export const Leaderboard = () => {
     sessionStorage.setItem(`leaderboardScrollPos-${id}`, e.currentTarget.scrollTop.toString());
   };
 
-  if (!item) return null;
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setIsRefreshing(false);
+      // In a real app, this would fetch new data
+      showToast('榜单已刷新');
+    }, 800);
+  };
+
+  const handleShare = async () => {
+    if (!item) return;
+    const shareText = `快来看看【${item.title}】的最新排行榜吧！\n链接：${window.location.href}`;
+    try {
+      await navigator.clipboard.writeText(shareText);
+      showToast('分享文案已复制');
+    } catch (err) {
+      showToast('复制失败，请手动复制链接');
+    }
+  };
+
+  if (!item) {
+    return (
+      <PageWrapper type="fade">
+        <div className="flex-1 flex flex-col items-center justify-center bg-[#f0f2f5] px-5 h-screen">
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
+            <Info className="w-10 h-10 text-[#ccc]" />
+          </div>
+          <h2 className="text-[18px] font-bold text-[#333] mb-2">活动不存在</h2>
+          <p className="text-[14px] text-[#999] text-center mb-8">该活动可能已被删除或尚未开始</p>
+          <div 
+            className="w-[200px] h-[44px] bg-gradient-to-r from-[#ff9a44] to-[#ff5e00] rounded-full flex items-center justify-center text-white font-bold shadow-md cursor-pointer active:scale-95 transition-transform"
+            onClick={() => navigate('/')}
+          >
+            返回首页
+          </div>
+        </div>
+      </PageWrapper>
+    );
+  }
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -65,36 +105,73 @@ export const Leaderboard = () => {
         className="flex-1 overflow-y-auto pb-[40px] scrollbar-hide bg-[#f0f2f5]"
       >
         {/* Top Bar */}
-        <div className="sticky top-0 left-0 w-full h-[88px] flex items-end justify-between px-5 pb-[10px] z-[100] bg-[#ff5e00]">
+        <div className="sticky top-0 left-0 w-full h-[88px] flex items-end justify-between px-5 pb-[10px] z-[100] bg-[#f0f2f5]/80 backdrop-blur-md">
           <div 
-            className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center cursor-pointer"
+            className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center cursor-pointer"
             onClick={() => navigate(-1)}
           >
-            <ChevronLeft className="w-5 h-5 text-white" strokeWidth={2.5} />
+            <ChevronLeft className="w-5 h-5 text-[#111]" strokeWidth={2.5} />
           </div>
-          <div className="text-[17px] font-bold text-white">排行榜</div>
-          <div className="w-10 h-10" /> {/* Spacer */}
+          <div className="flex gap-3">
+            <div 
+              className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center cursor-pointer"
+              onClick={handleShare}
+            >
+              <Share2 className="w-5 h-5 text-[#111]" strokeWidth={2.5} />
+            </div>
+            <div 
+              className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center cursor-pointer"
+              onClick={handleRefresh}
+            >
+              <RefreshCw className={cn("w-5 h-5 text-[#111]", isRefreshing && "animate-spin")} strokeWidth={2.5} />
+            </div>
+          </div>
         </div>
 
-        {/* Header Background */}
-        <div className="bg-[#ff5e00] pt-6 pb-12 px-5 text-center relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
-              <path d="M0,0 L100,0 L100,100 L0,100 Z" fill="url(#grid)" />
-              <defs>
-                <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                  <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5" />
-                </pattern>
-              </defs>
-            </svg>
+        {/* Activity Info Card */}
+        <div className="mx-5 mt-2 mb-8 bg-white rounded-[24px] p-5 shadow-[0_8px_20px_rgba(0,0,0,0.03)] relative overflow-hidden">
+          <h1 className="text-[20px] font-extrabold text-[#111] mb-2 relative z-10">人气排行榜</h1>
+          <p className="text-[14px] text-[#666] relative z-10 mb-5">{item.title}</p>
+          
+          <div className="bg-gradient-to-r from-[#fff4ed] to-[#fffaf5] rounded-[16px] p-4 border border-[#ffe4cc] flex justify-between items-center relative z-10">
+            <div className="flex-1 text-center">
+              <div className="text-[12px] text-[#d97706] opacity-80 mb-1">总票数</div>
+              <div className="text-[18px] font-extrabold text-[#ea580c]">{teams.reduce((sum, t) => sum + t.votes, 0)}</div>
+            </div>
+            <div className="w-[1px] h-8 bg-[#ffe4cc] mx-2"></div>
+            <div className="flex-1 text-center">
+              <div className="text-[12px] text-[#d97706] opacity-80 mb-1">参与队伍</div>
+              <div className="text-[18px] font-extrabold text-[#ea580c]">{teams.length}</div>
+            </div>
+            <div className="w-[1px] h-8 bg-[#ffe4cc] mx-2"></div>
+            <div className="flex-1 text-center">
+              <div className="text-[12px] text-[#d97706] opacity-80 mb-1">状态</div>
+              <div className="text-[14px] font-bold text-[#ea580c] mt-1">
+                {item.status === 'voting' ? '投票中' : item.status === 'ended' ? '已结束' : '未开始'}
+              </div>
+            </div>
           </div>
-          <h1 className="text-[24px] font-extrabold text-white mb-2 relative z-10">人气排行榜</h1>
-          <p className="text-[14px] text-white/80 relative z-10">{item.title}</p>
         </div>
 
-        {/* Top 3 Podium */}
-        <div className="mx-5 -mt-8 relative z-10 flex items-end justify-center gap-2 mb-6">
-          {/* 2nd Place */}
+        {teams.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center py-20 px-5">
+            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
+              <Info className="w-10 h-10 text-[#ccc]" />
+            </div>
+            <h2 className="text-[18px] font-bold text-[#333] mb-2">暂无排名数据</h2>
+            <p className="text-[14px] text-[#999] text-center mb-8">当前活动还没有队伍进入投票池</p>
+            <div 
+              className="w-[200px] h-[44px] bg-gradient-to-r from-[#ff9a44] to-[#ff5e00] rounded-full flex items-center justify-center text-white font-bold shadow-md cursor-pointer active:scale-95 transition-transform"
+              onClick={() => navigate(`/vote-list/${id}`)}
+            >
+              返回投票列表
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Top 3 Podium */}
+            <div className="mx-5 relative z-10 flex items-end justify-center gap-2 mb-6">
+              {/* 2nd Place */}
           {teams[1] && (
             <div className="flex-1 flex flex-col items-center" onClick={() => navigate(`/team-detail/${teams[1].id}`)}>
               <div className="relative mb-2">
@@ -108,6 +185,7 @@ export const Leaderboard = () => {
               <div className="bg-white w-full rounded-t-[16px] pt-4 pb-3 px-2 text-center shadow-sm mt-1 h-[100px] flex flex-col justify-end border-t-4 border-[#e5e7eb]">
                 <div className="text-[12px] font-bold text-[#111] truncate w-full mb-1">{teams[1].name}</div>
                 <div className="text-[14px] font-extrabold text-[#ff5e00]">{teams[1].votes}票</div>
+                <div className="text-[10px] text-[#10b981]">今日 +{teams[1].todayVotes}</div>
               </div>
             </div>
           )}
@@ -126,6 +204,7 @@ export const Leaderboard = () => {
               <div className="bg-white w-full rounded-t-[16px] pt-4 pb-4 px-2 text-center shadow-md mt-1 h-[120px] flex flex-col justify-end border-t-4 border-[#ffd700]">
                 <div className="text-[13px] font-extrabold text-[#111] truncate w-full mb-1">{teams[0].name}</div>
                 <div className="text-[16px] font-extrabold text-[#ff5e00]">{teams[0].votes}票</div>
+                <div className="text-[11px] text-[#10b981]">今日 +{teams[0].todayVotes}</div>
               </div>
             </div>
           )}
@@ -144,6 +223,7 @@ export const Leaderboard = () => {
               <div className="bg-white w-full rounded-t-[16px] pt-4 pb-3 px-2 text-center shadow-sm mt-1 h-[90px] flex flex-col justify-end border-t-4 border-[#fcd34d]">
                 <div className="text-[12px] font-bold text-[#111] truncate w-full mb-1">{teams[2].name}</div>
                 <div className="text-[14px] font-extrabold text-[#ff5e00]">{teams[2].votes}票</div>
+                <div className="text-[10px] text-[#10b981]">今日 +{teams[2].todayVotes}</div>
               </div>
             </div>
           )}
@@ -154,7 +234,7 @@ export const Leaderboard = () => {
           variants={containerVariants} 
           initial="hidden" 
           animate="show"
-          className="mx-5 space-y-3"
+          className="mx-5 space-y-3 mb-6"
         >
           {teams.slice(3).map((team, index) => (
             <motion.div 
@@ -185,6 +265,19 @@ export const Leaderboard = () => {
             </motion.div>
           ))}
         </motion.div>
+
+            {/* Bottom Actions */}
+            <div className="mx-5 flex justify-center pb-6">
+              <div 
+                className="flex items-center justify-center gap-2 bg-white text-[#666] px-6 py-2.5 rounded-full text-[14px] font-bold shadow-sm cursor-pointer active:bg-[#f9f9f9] border border-[#e5e7eb]"
+                onClick={() => navigate(`/vote-list/${id}`)}
+              >
+                <List className="w-4 h-4" />
+                返回投票列表
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </PageWrapper>
   );

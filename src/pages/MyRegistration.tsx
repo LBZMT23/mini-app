@@ -91,17 +91,17 @@ export const MyRegistration = () => {
               <div className="mt-5">
                 {regData.popStatus === 'none' && (
                   <div className="w-full h-[50px] border-[1.5px] border-dashed border-[#ff5e00] rounded-[16px] text-[#ff5e00] flex items-center justify-center text-[15px] font-bold cursor-pointer bg-[#fff0e6] active:scale-[0.98] transition-transform" onClick={() => navigate(`/pop-submit/${id}?mode=edit`)}>
-                    参加人气风采展示
+                    参加人气奖
                   </div>
                 )}
                 {regData.popStatus === 'pending' && (
-                  <div className="w-full h-[50px] border-[1.5px] border-dashed border-[#ff5e00] rounded-[16px] text-[#ff5e00] flex items-center justify-center text-[15px] font-bold cursor-pointer bg-[#fff0e6] active:scale-[0.98] transition-transform" onClick={() => navigate(`/pop-submit/${id}?mode=edit`)}>
-                    查看并修改图片 (待审核)
+                  <div className="w-full h-[50px] border-[1.5px] border-dashed border-[#ff5e00] rounded-[16px] text-[#ff5e00] flex items-center justify-center text-[15px] font-bold cursor-pointer bg-[#fff0e6] active:scale-[0.98] transition-transform" onClick={() => navigate(`/pop-submit/${id}?mode=view`)}>
+                    查看已提交图片 (待审核)
                   </div>
                 )}
                 {regData.popStatus === 'rejected' && (
                   <div className="w-full h-[50px] border-[1.5px] border-dashed border-[#ff5e00] rounded-[16px] text-[#ff5e00] flex items-center justify-center text-[15px] font-bold cursor-pointer bg-[#fff0e6] active:scale-[0.98] transition-transform" onClick={() => navigate(`/pop-submit/${id}?mode=edit`)}>
-                    修改并重新提交 (已驳回)
+                    可修改重提 (已驳回)
                   </div>
                 )}
                 {regData.popStatus === 'approved' && (
@@ -109,8 +109,8 @@ export const MyRegistration = () => {
                     <div className="w-full h-[50px] border-[1.5px] border-dashed border-[#ff5e00] rounded-[16px] text-[#ff5e00] flex items-center justify-center text-[15px] font-bold cursor-pointer bg-[#fff0e6] active:scale-[0.98] transition-transform" onClick={() => navigate(`/pop-submit/${id}?mode=view`)}>
                       查看已提交展示照片
                     </div>
-                    <div className="w-full h-[50px] border border-[#ff5e00] rounded-[16px] text-[#ff5e00] flex items-center justify-center text-[15px] font-bold cursor-pointer bg-transparent active:scale-[0.98] transition-transform mt-2.5" onClick={() => showToast('正在前往投票详情页...')}>
-                      进入拉票
+                    <div className="w-full h-[50px] border border-[#ff5e00] rounded-[16px] text-[#ff5e00] flex items-center justify-center text-[15px] font-bold cursor-pointer bg-transparent active:scale-[0.98] transition-transform mt-2.5" onClick={() => navigate(`/vote-list/${id}`)}>
+                      进入投票池
                     </div>
                   </>
                 )}

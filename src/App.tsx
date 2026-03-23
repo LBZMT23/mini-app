@@ -16,6 +16,7 @@ import { VoteIndex } from './pages/VoteIndex';
 import { VoteList } from './pages/VoteList';
 import { TeamDetail } from './pages/TeamDetail';
 import { Leaderboard } from './pages/Leaderboard';
+import { Result } from './pages/Result';
 import { BottomNav } from './components/BottomNav';
 import { LoginPopup } from './components/LoginPopup';
 import { Toast } from './components/Toast';
@@ -35,6 +36,7 @@ const AnimatedRoutes = () => {
         <Route path="/vote-list/:id" element={<VoteList />} />
         <Route path="/team-detail/:id" element={<TeamDetail />} />
         <Route path="/leaderboard/:id" element={<Leaderboard />} />
+        <Route path="/result/:id" element={<Result />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>

@@ -61,7 +61,19 @@ export const Detail = () => {
       if (item.voteTeamCount > 0 && (item.status === 'voting' || item.status === 'ended')) {
         navigate(`/vote-list/${item.id}`);
       } else {
-        showToast('当前活动暂未开启投票');
+        showToast('当前活动暂未开启投票或无队伍入池');
+      }
+    } else if (m === '投票榜单') {
+      if (item.voteTeamCount > 0 && (item.status === 'voting' || item.status === 'ended')) {
+        navigate(`/leaderboard/${item.id}`);
+      } else {
+        showToast('当前活动暂未开启投票或无队伍入池');
+      }
+    } else if (m === '比赛结果') {
+      if (item.matchResultPublished || item.popResultPublished) {
+        navigate(`/result/${item.id}`);
+      } else {
+        showToast('比赛结果暂未公布');
       }
     } else {
       showToast('功能开发中: ' + m);
